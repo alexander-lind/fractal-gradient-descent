@@ -11,7 +11,17 @@ Each affine transformation has 6 parameters, and yields an attractor in the frac
 3. Apply the transformation on the point and draw it. 
 4. Go to step 2. 
 
-The source file `IteratedFunctionSystem.py` implements classes for affine transformations and IFS's with a finite set of affine transformations. The source file `FractalImage.py` provides a simple plotting script of the fractal images. Various different examples of IFS's are implemented including the Black Spleenworth Fern, which produces an infinitely complex pattern despite only being described by four affine transformations: 
-<br><img src="https://github.com/alexander-lind/fractal-gradient-descent/raw/main/figures/fern.png" alt="Fractal image of the Black Spleenworth Fern" width="40%">
+The source file `IteratedFunctionSystem.py` implements classes for affine transformations and IFS's with a finite set of affine transformations. The source file `FractalImage.py` provides a simple plotting script of the fractal images. Various different examples of IFS's are implemented, including the Black Spleenworth Fern and the Heighway Dragon, both producing infinitely complex patterns despite only being described by respectively four and two affine transformations: 
+<br><img src="https://github.com/alexander-lind/fractal-gradient-descent/raw/main/figures/fern.png" alt="Fractal image of the Black Spleenworth Fern" width="40%"><img src="https://github.com/alexander-lind/fractal-gradient-descent/raw/main/figures/heighwaydragon.png" alt="Fractal image of the Heighway Dragon" width="40%">
 
 The inverse problem is then: Starting with a fractal image, can we determine the affine transformations and their parameters that generates the given fractal image? This is an interesting problem for which machine learning techniques may be useful. 
+
+Provided a fractal image without knowledge of the underlying IFS, we can extract the 2D points from the image with existing image-to-pointcloud techniques. This will constitute our target image. 
+
+Following a gradient descent approach, we can start with an IFS with random affine transformations, generate a fractal image with it, and then compare it to the target image. The comparison will lead to a "loss" estimate ![](https://latex.codecogs.com/svg.latex?E%28%5Cvec%7B%5Ctheta%7D%29), where ![](https://latex.codecogs.com/svg.latex?%5Cvec%7B%5Ctheta%7D) are the parameters of the IFS. The parameters can then be updated with: 
+
+![](https://latex.codecogs.com/svg.latex?%5Cvec%7B%5Ctheta%7D_%7Bn+1%7D%3D%5Cvec%7B%5Ctheta%7D_n-%5Ceta%5Cnabla%20E%28%5Cvec%7B%5Ctheta%7D_n%29)
+
+where ![](https://latex.codecogs.com/svg.latex?%5Ceta) is the learning rate. This will performed enough steps to minimise the loss. The optimal number of affine transformations in the IFS can be determined through hyperparameter optimisation. 
+
+The choice of loss function (i.e. estimate of similarity between the fractal images) is important. Reasonable choices includes the [Hausdorff distance](https://en.wikipedia.org/wiki/Hausdorff_distance), the [Chamfer distance](https://arxiv.org/abs/1612.00603), or to average over distances to nearest neighbours with an exclusion of outliers. 
